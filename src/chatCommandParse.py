@@ -1,3 +1,4 @@
+#Author: Ryan Wrigley
 #Input: List of strings that are chat message from twitch chat
 #Output: The most common valid command from the list
 #   Outputs null if incorrect input or no valid commands
