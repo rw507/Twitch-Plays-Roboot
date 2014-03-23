@@ -1,1 +1,14 @@
-oauth:bgi56ufjkmc24jgkdpn0ktrblxpkamy
+Chat Behaviors
+Forward
+Right
+Left
+
+Phone Numbers
+Tyler Darsey - 601-513-4027
+Ryan Wrigley - 870-256-5007
+Jerel Henderson - 901-289-8807
+
+twitch.tv account:
+Username = "Twitch_Plays_Robot"
+Pass = "ab1234!" (I think)
+oauth = oauth:4yacpxm65x6gb71jv91zvyo3npf0qzt
