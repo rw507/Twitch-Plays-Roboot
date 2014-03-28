@@ -18,6 +18,8 @@ class twitchChatter:
     config = ConfigParser.ConfigParser() #Config Settings
 
     def __init__(self):
+    
+    	self.irc.settimeout(5)
 
         self.config.read('_settings.cfg')
         self.server = self.config.get('ConnectionSettings', 'server')
@@ -48,20 +50,27 @@ class twitchChatter:
 
     #This is blocking!  Returns the next message said in the chat
     def getMessage(self):
+    
+    	returnMessage = ("", "")
+    
         data = self.irc.recv(1204) #gets output from IRC server
         inMessage = self.parsemsg(data)
 
         #This try will print out any chat messages.  Otherwise, it just prints data.
         try:
             #Actual chat messages go through here.
-            print inMessage[0].split('!')[0] + ": " + inMessage[2][1] #username: message
+            if(len(inMessage) > 2):
+            	returnMessage = (inMessage[0].split('!')[0], inMessage[2][1]) #username, message
         except IndexError:
-            print data
+        	pass
+            #print data
 
         if data.find('PING') != -1:
             self.irc.send(data.replace('PING', 'PONG')) #responds to PINGS from the server
         if data.find('!test') != -1: #!test command
             self.message('Hi')
+            
+        return returnMessage
 
     #From http://stackoverflow.com/questions/930700/python-parsing-irc-messages
     #Based off of the Twisted library's irc parser.
@@ -86,7 +95,7 @@ class twitchChatter:
     #Simple repeating thread for reseting the spamCounter variable every 30 seconds.
     def spamCounterTimer(self):
         self.spamCounter = 0
-        threading.Timer(30,self.spamCounterTimer).start()
+        threading.Timer(2,self.spamCounterTimer).start()
 
     #TODO
     def setConfigSetting(self, section, key, value):
@@ -105,5 +114,5 @@ class twitchChatter:
 if (__name__ == "__main__"):
     myTwitchReader = twitchChatter()
     while True:
-        myTwitchReader.getMessage()
+        print(myTwitchReader.getMessage())
 
