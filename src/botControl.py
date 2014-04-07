@@ -13,21 +13,21 @@ obstacle_near = False
 
 
 def laserCallback(data):
-    global obstacle_near
+	global obstacle_near
 
-    obstacle_distance_threshold = 2.0
+	obstacle_distance_threshold = 2.0
 
-    print 'Got new laser scan at ', rospy.Time.now()
-    min_range = data.range_max
-    for i in range(len(data.ranges)):
-        if data.ranges[i] < min_range:
-            min_range = data.ranges[i]
+	#print 'Got new laser scan at ', rospy.Time.now()
+	min_range = data.range_max
+	for i in range(len(data.ranges)):
+		if data.ranges[i] < min_range:
+			min_range = data.ranges[i]
 
-    print 'Minimum range from scan is : ', min_range
-    if min_range < obstacle_distance_threshold:
-        obstacle_near = True
-    else:
-        obstacle_near = False
+	#print 'Minimum range from scan is : ', min_range
+	if min_range < obstacle_distance_threshold:
+		obstacle_near = True
+	else:
+		obstacle_near = False
 
 
 #General movement Function
@@ -37,12 +37,10 @@ def move(inDir, maxTicks):
 	
 	tick = 0
 	
-	twist = inDir
-	
 	while(tick < maxTicks):
 		tick += 1
-		#rospy.sleep(0.1)
-		time.sleep(0.1)
+		rospy.sleep(0.1)
+		#time.sleep(0.1)
 		
 		if(obstacle_near):
 			avoidObstical()
@@ -62,10 +60,10 @@ def avoidObstical():
 
 #Main Loop
 if __name__ == '__main__':
-    rospy.init_node('bouncer', anonymous=True)
-    pub = rospy.Publisher('cmd_vel', Twist)
-    rospy.Subscriber("base_scan", LaserScan, laserCallback) 
-    
+	rospy.init_node('bouncer', anonymous=True)
+	pub = rospy.Publisher('cmd_vel', Twist)
+	rospy.Subscriber("base_scan", LaserScan, laserCallback) 
+	
 	twist = Twist()
 	
 	chatReader = twitchChatter()
