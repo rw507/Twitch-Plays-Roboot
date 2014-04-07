@@ -51,26 +51,28 @@ class twitchChatter:
     #This is blocking!  Returns the next message said in the chat
     def getMessage(self):
     
-    	returnMessage = ("", "")
+		gotMessage = False
+
+		while(gotMessage == False):
     
-        data = self.irc.recv(1204) #gets output from IRC server
-        inMessage = self.parsemsg(data)
-
-        #This try will print out any chat messages.  Otherwise, it just prints data.
-        try:
-            #Actual chat messages go through here.
-            if(len(inMessage) > 2):
-            	returnMessage = (inMessage[0].split('!')[0], inMessage[2][1]) #username, message
-        except IndexError:
-        	pass
-            #print data
-
-        if data.find('PING') != -1:
-            self.irc.send(data.replace('PING', 'PONG')) #responds to PINGS from the server
-        if data.find('!test') != -1: #!test command
-            self.message('Hi')
+			returnMessage = ("", "")
+		
+			data = self.irc.recv(1204) #gets output from IRC server
+			inMessage = self.parsemsg(data)
+	
+			#This try will print out any chat messages.  Otherwise, it just prints data.
+			
+			#Actual chat messages go through here.
+			if(len(inMessage[2]) >= 2):
+				returnMessage = (inMessage[0].split('!')[0], inMessage[2][1]) #username, message
+				gotMessage = True
+	
+			if data.find('PING') != -1:
+				self.irc.send(data.replace('PING', 'PONG')) #responds to PINGS from the server
+			if data.find('!test') != -1: #!test command
+				self.message('Hi')
             
-        return returnMessage
+		return returnMessage
 
     #From http://stackoverflow.com/questions/930700/python-parsing-irc-messages
     #Based off of the Twisted library's irc parser.
