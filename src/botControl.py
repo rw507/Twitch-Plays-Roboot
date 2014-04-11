@@ -15,7 +15,7 @@ obstacle_near = False
 def laserCallback(data):
 	global obstacle_near
 
-	obstacle_distance_threshold = 2.0
+	obstacle_distance_threshold = 1.0
 
 	#print 'Got new laser scan at ', rospy.Time.now()
 	min_range = data.range_max
@@ -31,7 +31,7 @@ def laserCallback(data):
 
 
 #General movement Function
-def move(inDir, maxTicks):
+def move(inDir, maxTicks, checkForObsticals = True):
 	global twist
 	global obstacle_near
 	
@@ -42,7 +42,7 @@ def move(inDir, maxTicks):
 		rospy.sleep(0.1)
 		#time.sleep(0.1)
 		
-		if(obstacle_near):
+		if(checkForObsticals and obstacle_near):
 			avoidObstical()
 			break
 			
@@ -53,8 +53,8 @@ def move(inDir, maxTicks):
 
 #Moves to make if we run into an obstacle	
 def avoidObstical():
-	move((-1, 0), 10)
-	move((0, 1), 10)
+	move((-1, 0), 10, False)
+	move((0, 1), 10, False)
 
 	
 
