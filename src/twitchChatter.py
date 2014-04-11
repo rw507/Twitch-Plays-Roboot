@@ -21,12 +21,19 @@ class twitchChatter:
     
     	self.irc.settimeout(5)
 
+	"""
         self.config.read('_settings.cfg')
         self.server = self.config.get('ConnectionSettings', 'server')
         self.port = int(self.config.get('ConnectionSettings', 'port'))
         self.nick = self.config.get('ConnectionSettings', 'nick')
         self.password = self.config.get('ConnectionSettings', 'password')
         self.channel = self.config.get('ConnectionSettings', 'channel')
+	"""
+	self.server = "199.9.252.26"
+	self.port = 6667
+	self.nick = "Twitch_Plays_Robot"
+	self.password = "oauth:4yacpxm65x6gb71jv91zvyo3npf0qzt"
+	self.channel =  "#twitchplayspokemon"
 
         self.spamCounter = 0 #sets variable for anti-spam spamCounter functionality
 
