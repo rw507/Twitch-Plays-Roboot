@@ -1,7 +1,7 @@
 #Class definition of twitchChatter. A simple chat reader.
 #This uses _settings.cfg
 
-#TODO: Save messages to a queue.  This can later be read by the chat parser.
+#TODO: Save messages to a queue.  Block if the queue is empty.
 
 #Found at http://stackoverflow.com/questions/21926495/irc-bot-in-python-wont-send-messages
 #Based off of Phredd's IRC bot http://pastebin.com/r1LtgEKC
@@ -16,23 +16,27 @@ class twitchChatter:
 
     irc = socket.socket() #Socket for the irc chat
     spamCounter = 0       #A counter to make sure we're not spamming the irc accidentally
-    config = ConfigParser.ConfigParser() #Config Settings
+    #config = ConfigParser.ConfigParser() #Config Settings
     lastMessage = ("", "")
+    messageQueue = Queue.Queue()
     messageCount = 0
 
     def __init__(self):
 
         self.irc.settimeout(5)
 
-        self.server = "199.9.252.26"
+        #self.server = "199.9.252.26"
+	self.server = "irc.twitch.tv"
         self.port = 6667
         self.nick = "Twitch_Plays_Robot"
         self.password = "oauth:4yacpxm65x6gb71jv91zvyo3npf0qzt"
-        self.channel =  "#twitchplayspokemon"
+        #self.channel =  "#twitchplayspokemon"
+	self.channel = "#twitch_plays_robot"
 
         self.spamCounter = 0 #sets variable for anti-spam spamCounter functionality
 
         self.irc.connect((self.server, self.port)) #connects to the server
+	self.irc.settimeout(None)
 
         #sends variables for connection to twitch chat
         self.irc.send('PASS ' + self.password + '\r\n')
@@ -44,11 +48,6 @@ class twitchChatter:
         self.readerThread = threading.Thread(target = self.readMessages)
         self.readerThread.start()
 
-    """
-    def __del__(self):
-        self.readerThread.stop()
-    """
-
 
     #Send a message to the irc chat
     def sendMessage(self, msg):
@@ -59,14 +58,8 @@ class twitchChatter:
             print 'Message deleted'
             
     #This is blocking!  Returns the next message said in the chat
-    def getMessage(self):
-        #Wait for the message counter to go up
-        currentCount = self.messageCount
-        while(currentCount == self.messageCount):
-            time.sleep(0.1)
-        
-
-        return self.lastMessage
+    def getMessage(self):        
+        return self.messageQueue.get()
         
 
     
@@ -74,16 +67,13 @@ class twitchChatter:
     def readMessages(self):
 
         while(True):
-
-            
-            
             data = self.irc.recv(1204) #gets output from IRC server
             inMessage = self.parsemsg(data)
             
             #Actual chat messages go through here.
             if(len(inMessage[2]) >= 2):
-                self.lastMessage =  (inMessage[0].split('!')[0], inMessage[2][1]) #username, message
-                self.messageCount += 1
+                self.messageQueue.put((inMessage[0].split('!')[0], inMessage[2][1])) #username, message
+
 
             """
             if data.find('PING') != -1:
