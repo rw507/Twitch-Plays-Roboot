@@ -4,13 +4,6 @@ import time
 from twitchChatter import *
 
 
-'''
-while True:
-  message = sys.stdin.readline()
-  print(message)
-  break
-'''
-
 class chatterParser(threading.Thread):
   lock = threading.Lock()
   count = 0
@@ -33,6 +26,9 @@ class chatterParser(threading.Thread):
     while(self.running):      
       message = self.twitchReader.getMessage()
       if(message[0].strip() == "" or self.nextCommand):
+	continue
+      if(message[0] == "Twitch_plays_robot"):
+	self.nextCommand = message[1]
 	continue
       clean = self.cleanMessage(message[1])     
      # print("Is " + clean + " a command?")
@@ -69,8 +65,7 @@ class chatterParser(threading.Thread):
     
     return c
   def stop(self):
-    self.running = False
-    
+    self.running = False 
     
       
   
