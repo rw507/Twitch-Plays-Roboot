@@ -25,9 +25,10 @@ class chatterParser(threading.Thread):
   def run(self):
     while(self.running):      
       message = self.twitchReader.getMessage()
+      print(message)
       if(message[0].strip() == "" or self.nextCommand):
 	continue
-      if(message[0] == "Twitch_plays_robot"):
+      if(message[0] == "twitch_plays_robot"):
 	self.nextCommand = message[1]
 	continue
       clean = self.cleanMessage(message[1])     
