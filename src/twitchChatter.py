@@ -10,30 +10,25 @@ import threading #imports module allowing timing functions
 import Queue
 import ConfigParser
 import os
+import time
 
 class twitchChatter:
 
     irc = socket.socket() #Socket for the irc chat
     spamCounter = 0       #A counter to make sure we're not spamming the irc accidentally
     config = ConfigParser.ConfigParser() #Config Settings
+    lastMessage = ("", "")
+    messageCount = 0
 
     def __init__(self):
-    
-    	self.irc.settimeout(5)
 
-	"""
-        self.config.read('_settings.cfg')
-        self.server = self.config.get('ConnectionSettings', 'server')
-        self.port = int(self.config.get('ConnectionSettings', 'port'))
-        self.nick = self.config.get('ConnectionSettings', 'nick')
-        self.password = self.config.get('ConnectionSettings', 'password')
-        self.channel = self.config.get('ConnectionSettings', 'channel')
-	"""
-	self.server = "199.9.252.26"
-	self.port = 6667
-	self.nick = "Twitch_Plays_Robot"
-	self.password = "oauth:4yacpxm65x6gb71jv91zvyo3npf0qzt"
-	self.channel =  "#twitchplayspokemon"
+        self.irc.settimeout(5)
+
+        self.server = "199.9.252.26"
+        self.port = 6667
+        self.nick = "Twitch_Plays_Robot"
+        self.password = "oauth:4yacpxm65x6gb71jv91zvyo3npf0qzt"
+        self.channel =  "#twitchplayspokemon"
 
         self.spamCounter = 0 #sets variable for anti-spam spamCounter functionality
 
@@ -41,45 +36,65 @@ class twitchChatter:
 
         #sends variables for connection to twitch chat
         self.irc.send('PASS ' + self.password + '\r\n')
-        #self.irc.send('USER ' + self.nick + ' 0 * :' + self.bot_owner + '\r\n')
         self.irc.send('NICK ' + self.nick + '\r\n')
         self.irc.send('JOIN ' + self.channel + '\r\n')
 
         self.spamCounterTimer()
 
+        self.readerThread = threading.Thread(target = self.readMessages)
+        self.readerThread.start()
+
+    """
+    def __del__(self):
+        self.readerThread.stop()
+    """
+
+
     #Send a message to the irc chat
-    def message(self, msg):
+    def sendMessage(self, msg):
         self.spamCounter = self.spamCounter + 1
         if self.spamCounter < 20: #ensures does not send >20 msgs per 30 seconds.
             self.irc.send('PRIVMSG ' + self.channel + ' :' + msg + '\r\n')
         else:
             print 'Message deleted'
-
+            
     #This is blocking!  Returns the next message said in the chat
     def getMessage(self):
-    
-		gotMessage = False
+        #Wait for the message counter to go up
+        currentCount = self.messageCount
+        while(currentCount == self.messageCount):
+            time.sleep(0.1)
+        
 
-		while(gotMessage == False):
+        return self.lastMessage
+        
+
     
-			returnMessage = ("", "")
-		
-			data = self.irc.recv(1204) #gets output from IRC server
-			inMessage = self.parsemsg(data)
-	
-			#This try will print out any chat messages.  Otherwise, it just prints data.
-			
-			#Actual chat messages go through here.
-			if(len(inMessage[2]) >= 2):
-				returnMessage = (inMessage[0].split('!')[0], inMessage[2][1]) #username, message
-				gotMessage = True
-	
-			if data.find('PING') != -1:
-				self.irc.send(data.replace('PING', 'PONG')) #responds to PINGS from the server
-			if data.find('!test') != -1: #!test command
-				self.message('Hi')
+
+    def readMessages(self):
+
+        while(True):
+
             
-		return returnMessage
+            
+            data = self.irc.recv(1204) #gets output from IRC server
+            inMessage = self.parsemsg(data)
+            
+            #Actual chat messages go through here.
+            if(len(inMessage[2]) >= 2):
+                self.lastMessage =  (inMessage[0].split('!')[0], inMessage[2][1]) #username, message
+                self.messageCount += 1
+
+            """
+            if data.find('PING') != -1:
+                    self.irc.send(data.replace('PING', 'PONG')) #responds to PINGS from the server
+            if data.find('!test') != -1: #!test command
+                    self.sendMessage('Hi')
+            """
+
+
+
+        
 
     #From http://stackoverflow.com/questions/930700/python-parsing-irc-messages
     #Based off of the Twisted library's irc parser.
@@ -106,22 +121,15 @@ class twitchChatter:
         self.spamCounter = 0
         threading.Timer(2,self.spamCounterTimer).start()
 
-    #TODO
-    def setConfigSetting(self, section, key, value):
-        pass
-
-    def saveConfigSettings(self):
-        pass
-
-    def getMessageFromQueue(self):
-        pass
-
-    def purgeQueue(self):
-        pass
-
 #Unit Test
 if (__name__ == "__main__"):
+
+    
+    
     myTwitchReader = twitchChatter()
+    print("hi");
     while True:
+       
         print(myTwitchReader.getMessage())
+        time.sleep(1)
 
