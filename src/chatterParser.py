@@ -15,33 +15,35 @@ class chatterParser(threading.Thread):
     self.twitchReader = twitchChatter()
     self.reset()
     self.running = True   
+
+  def getTwtichChatter(self):
+    return self.twitchReader
   
   def stop(self):
     self.running = False
   
-  def getCommand(self):
-    pass
+
   
   def run(self):
     while(self.running):      
       message = self.twitchReader.getMessage()
       print(message)
       if(message[0].strip() == "" or self.nextCommand):
-	continue
+        continue
       if(message[0] == "twitch_plays_robot"):
-	self.nextCommand = message[1]
-	continue
+        self.nextCommand = message[1]
+        continue
       clean = self.cleanMessage(message[1])     
      # print("Is " + clean + " a command?")
       if clean in self.commands:
-	#print("yes")
-	with self.lock:
-	  self.comCount[clean]+=1
-	  if(self.comCount[clean] >= self.threshold):
-	    self.nextCommand = clean
+  #print("yes")
+        with self.lock:
+          self.comCount[clean]+=1
+          if(self.comCount[clean] >= self.threshold):
+            self.nextCommand = clean
 
-	
-	
+  
+  
   def cleanMessage(self, raw):
     clean = raw.lower().replace(" ", "").strip()
     return clean
@@ -55,7 +57,7 @@ class chatterParser(threading.Thread):
       self.nextCommand = None      
       self.comCount = {}
       for c in self.commands:
-	self.comCount[c] = 0
+        self.comCount[c] = 0
       #print("This should be 0: " + str(self.count))
   def getNextCommand(self):
     if(self.nextCommand):
@@ -65,10 +67,19 @@ class chatterParser(threading.Thread):
       return None
     
     return c
-  def stop(self):
-    self.running = False 
+
+  def forceNextCommand(self):
+    keys = self.comCount.keys()
+    count = 0
+    command = None
+    for k in keys:
+      if(self.comCount[k] > count):
+        count = self.comCount[k]
+        command = k
+    return command
     
-      
+  def stop(self):
+    self.running = False      
   
 if __name__ == ("__main__"):
   threshold = 2
