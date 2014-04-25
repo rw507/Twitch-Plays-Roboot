@@ -16,7 +16,7 @@ class chatterParser(threading.Thread):
     self.reset()
     self.running = True   
 
-  def getTwtichChatter(self):
+  def getTwichChatter(self):
     return self.twitchReader
   
   def stop(self):
