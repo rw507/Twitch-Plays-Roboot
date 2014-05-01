@@ -20,7 +20,9 @@ class chatterParser(threading.Thread):
     return self.twitchReader
   
   def stop(self):
-    self.running = False
+    with self.lock:
+      self.running = False
+      self.twitchReader = None
   
 
   
@@ -86,11 +88,13 @@ if __name__ == ("__main__"):
   chatterParser = chatterParser(threshold)
   chatterParser.start()
   
-  for i in range(100):
+  for i in range(1,100):
     time.sleep(1)
-    print(chatterParser.getNextCommand())
-    
+    print(str(i) + ": " + str(chatterParser.getNextCommand()))
+
+  print("STOPPING")
   chatterParser.stop()
+  print("I SHOULD HAVE STOPPED")
   
   """
   time.sleep(2) 
