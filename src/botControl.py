@@ -4,10 +4,10 @@ import rospy
 from geometry_msgs.msg import *
 from sensor_msgs.msg import *
 
-#import time
+import time
 import re
 
-from twitchChatter import twitchChatter
+from chatterParser import chatterParser
 
 obstacle_near = False
 
@@ -66,19 +66,28 @@ if __name__ == '__main__':
 	
 	twist = Twist()
 	
-	chatReader = twitchChatter()
-	while(True):
-		newMessage = chatReader.getMessage()
-		
-		if(re.match(r'^up', newMessage[1])):
-			move((1,0), 10)
-			
-		if(re.match(r'^left', newMessage[1])):
-			move((0,1), 10)
-			
-		if(re.match(r'^right', newMessage[1])):
-			move((0,-1), 10)
+	chatterParser = chatterParser(5)
+	chatterParser.start()
 
+	timeoutCounter = 0
+	while(True):
+		if(timeoutCounter > 10000):
+			print("Force Command")
+			timeoutCounter = 0
+		else:
+			nextCommand = chatterParser.getNextCommand()
+			if(nextCommand == None):
+				timeoutCounter += 1
+			else:
+			        print nextCommand
+				if(re.match(r'^up', nextCommand)):
+					move((1,0), 10)
 			
+				if(re.match(r'^left', nextCommand)):
+					move((0,1), 10)
+			
+				if(re.match(r'^right', nextCommand)):
+					move((0,-1), 10)
+		time.sleep(0.1)		
 	print 'Done'
 

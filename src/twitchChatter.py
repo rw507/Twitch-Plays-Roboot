@@ -30,6 +30,7 @@ class twitchChatter:
         self.port = 6667
         self.nick = "Twitch_Plays_Robot"
         self.password = "oauth:4yacpxm65x6gb71jv91zvyo3npf0qzt"
+
         #self.channel =  "#twitchplayspokemon"
 	self.channel = "#twitch_plays_robot"
 
