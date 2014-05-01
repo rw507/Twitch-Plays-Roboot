@@ -46,6 +46,7 @@ class twitchChatter:
         self.spamCounterTimer()
 
         self.readerThread = threading.Thread(target = self.readMessages)
+        self.readerThread.setDaemon(True)
         self.readerThread.start()
 
 
