@@ -1,0 +1,4 @@
+<launch>
+	<node pkg="stage_ros" type="stageros" name="stageros" args="$(find ai_labs)/world/msu_lab2_2.world" respawn="false" output="screen" />
+	<node name="twitchbot" pkg="ai_labs" type="botControl.py" output="screen" />
+</launch>
