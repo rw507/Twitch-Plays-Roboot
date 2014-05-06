@@ -77,7 +77,7 @@ class twitchChatter:
             #Actual chat messages go through here.
             if(len(inMessage[2]) >= 2):
 	
-		newMessage = (inMessage[0].split('!')[0].replace("\n", ""), inMessage[2][1].replace("\n", ""))
+		newMessage = (inMessage[0].split('!')[0], inMessage[2][1])
 		self.messageQueue.put(newMessage) #username, message
 		print("%s : %s" % (newMessage[0], newMessage[1]))
 

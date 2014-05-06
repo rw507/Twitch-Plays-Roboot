@@ -42,17 +42,17 @@ turnVerbs = [
 ]
 
 def getStartMessage():
-	return random.choice(startMessages)
+	return random.choice(self.startMessages)
 
 def getBoredMessage():
-	return random.choice(boredMessages)
+	return random.choice(self.boredMessages)
 
-def getMoveMessage(command):
-	moveVerb = random.choice(moveVerbs)
+def getMoveMessage(self, command):
+	moveVerb = random.choice(self.moveVerbs)
 	return moveVerb + " " + str(command) + "."
 	
-def getTurnMessage(command):
-	turnVerb = random.choice(turnVerbs)
+def getTurnMessage(self, command):
+	turnVerb = random.choice(self.turnVerbs)
 	return turnVerb + " " + str(command) + "."
 
 if (__name__ == "__main__"):

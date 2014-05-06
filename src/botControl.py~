@@ -96,6 +96,8 @@ if __name__ == '__main__':
 		
 		#Do something with it
 		if(nextCommand != None):
+		  
+			print nextCommand
 
 			if(re.match(r'^up', nextCommand)):
 				myMessage = messageGen.getMoveMessage('up')

@@ -43,6 +43,7 @@ class chatterParser(threading.Thread):
       if (clean in self.commands or (isAdmin and clean in self.adminCommands)):
   #print("yes")
         with self.lock:
+	  print("%s : %s" % (message[0], message[1]))
           self.comCount[clean]+=1
           if(self.comCount[clean] >= self.threshold):
             self.nextCommand = clean
