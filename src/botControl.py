@@ -53,7 +53,7 @@ def move(inDir, maxTicks, checkForObsticals = True):
 			avoidObstical()
 			break
 			
-		twist.linear.x = inDir[0]
+		twist.linear.x = inDir[0] * .25
 		twist.angular.z = inDir[1]
 		
 		pub.publish(twist)
