@@ -69,7 +69,7 @@ def avoidObstical():
 if __name__ == '__main__':
 	rospy.init_node('bouncer', anonymous=True)
 	pub = rospy.Publisher('cmd_vel', Twist)
-	pub = rospy.Publisher('/cmd_vel', Twist)
+	pub = rospy.Publisher('/moble_base/commands/velocitys', Twist)
 	rospy.Subscriber("base_scan", LaserScan, laserCallback) 
 	
 	twist = Twist()
